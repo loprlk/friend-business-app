@@ -13,10 +13,9 @@ export type Operation =
   | { type: "saving" }
   | { type: "deleting"; customerId: number };
 
-const [operation, setOperation] = useState<Operation>({ type: "none" });
-
 function CustomerPage({ onBack, onLogout }: CustomerPageProps) {
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [operation, setOperation] = useState<Operation>({ type: "none" });
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [customerBeingEdited, setCustomerBeingEdited] = useState<Customer | null>(null);
