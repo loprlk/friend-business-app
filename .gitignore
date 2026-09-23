@@ -33,3 +33,6 @@ obj/
 
 # Backup files
 *.old
+
+# Visual Studio publish profiles
+**/Properties/PublishProfiles/
