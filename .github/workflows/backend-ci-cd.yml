@@ -1,0 +1,50 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - feature/cicd
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-ci-cd.yml"
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend-ci-cd.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore dependencies
+        run: dotnet restore backend/FriendBusiness.Api/FriendBusiness.Api.csproj
+
+      - name: Build
+        run: dotnet build backend/FriendBusiness.Api/FriendBusiness.Api.csproj --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish backend/FriendBusiness.Api/FriendBusiness.Api.csproj --configuration Release --no-build --output ./publish
+
+      - name: Deploy to Azure App Service
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: friendbusiness-api-lochana
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./publish
